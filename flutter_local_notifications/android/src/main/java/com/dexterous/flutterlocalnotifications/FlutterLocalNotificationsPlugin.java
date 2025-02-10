@@ -255,6 +255,8 @@ public class FlutterLocalNotificationsPlugin
 
   protected static Notification createNotification(
       Context context, NotificationDetails notificationDetails) {
+
+        long notificationTimestamp = System.currentTimeMillis(); 
     NotificationChannelDetails notificationChannelDetails =
         NotificationChannelDetails.fromNotificationDetails(notificationDetails);
     if (canCreateNotificationChannel(context, notificationChannelDetails)) {
@@ -264,6 +266,7 @@ public class FlutterLocalNotificationsPlugin
     intent.setAction(SELECT_NOTIFICATION);
     intent.putExtra(NOTIFICATION_ID, notificationDetails.id);
     intent.putExtra(PAYLOAD, notificationDetails.payload);
+    intent.putExtra("NOTIFICATION_TIMESTAMP", notificationTimestamp); 
     int flags = PendingIntent.FLAG_UPDATE_CURRENT;
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
       flags |= PendingIntent.FLAG_IMMUTABLE;
@@ -314,6 +317,7 @@ public class FlutterLocalNotificationsPlugin
             .putExtra(ACTION_ID, action.id)
             .putExtra(CANCEL_NOTIFICATION, action.cancelNotification)
             .putExtra(PAYLOAD, notificationDetails.payload);
+            .putExtra("NOTIFICATION_TIMESTAMP", notificationTimestamp); 
         int actionFlags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (action.actionInputs == null || action.actionInputs.isEmpty()) {
           if (VERSION.SDK_INT >= VERSION_CODES.M) {
