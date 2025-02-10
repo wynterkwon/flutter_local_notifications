@@ -93,6 +93,7 @@ class NotificationResponse {
     this.actionId,
     this.input,
     this.payload,
+    this.timestamp,
     this.data = const <String, dynamic>{},
   });
 
@@ -122,6 +123,9 @@ class NotificationResponse {
 
   /// The notification response type.
   final NotificationResponseType notificationResponseType;
+
+  /// timestamp
+  final int? timestamp;
 }
 
 /// Contains details on the notification that launched the application.
