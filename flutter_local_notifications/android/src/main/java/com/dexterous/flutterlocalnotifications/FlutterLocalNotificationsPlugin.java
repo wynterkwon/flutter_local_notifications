@@ -123,6 +123,7 @@ public class FlutterLocalNotificationsPlugin
   static final String NOTIFICATION_ID = "notificationId";
   static final String NOTIFICATION_TAG = "notificationTag";
   static final String CANCEL_NOTIFICATION = "cancelNotification";
+  static final String TIMESTAMP = "timestamp"; //[ADD]
 
   private static final String TAG = "FLTLocalNotifPlugin";
 
@@ -256,7 +257,7 @@ public class FlutterLocalNotificationsPlugin
   protected static Notification createNotification(
       Context context, NotificationDetails notificationDetails) {
 
-        long notificationTimestamp = System.currentTimeMillis(); 
+        // long notificationTimestamp = System.currentTimeMillis(); 
     NotificationChannelDetails notificationChannelDetails =
         NotificationChannelDetails.fromNotificationDetails(notificationDetails);
     if (canCreateNotificationChannel(context, notificationChannelDetails)) {
@@ -266,7 +267,7 @@ public class FlutterLocalNotificationsPlugin
     intent.setAction(SELECT_NOTIFICATION);
     intent.putExtra(NOTIFICATION_ID, notificationDetails.id);
     intent.putExtra(PAYLOAD, notificationDetails.payload);
-    intent.putExtra("NOTIFICATION_TIMESTAMP", notificationTimestamp); 
+    // intent.putExtra("NOTIFICATION_TIMESTAMP", notificationTimestamp); 
     int flags = PendingIntent.FLAG_UPDATE_CURRENT;
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
       flags |= PendingIntent.FLAG_IMMUTABLE;
@@ -317,7 +318,7 @@ public class FlutterLocalNotificationsPlugin
             .putExtra(ACTION_ID, action.id)
             .putExtra(CANCEL_NOTIFICATION, action.cancelNotification)
             .putExtra(PAYLOAD, notificationDetails.payload);
-            .putExtra("NOTIFICATION_TIMESTAMP", notificationTimestamp); 
+            // .putExtra("NOTIFICATION_TIMESTAMP", notificationTimestamp); 
         int actionFlags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (action.actionInputs == null || action.actionInputs.isEmpty()) {
           if (VERSION.SDK_INT >= VERSION_CODES.M) {
@@ -627,10 +628,13 @@ public class FlutterLocalNotificationsPlugin
 
   static Map<String, Object> extractNotificationResponseMap(Intent intent) {
     final int notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
+    long notificationTimestamp = System.currentTimeMillis(); 
+
     final Map<String, Object> notificationResponseMap = new HashMap<>();
     notificationResponseMap.put(NOTIFICATION_ID, notificationId);
     notificationResponseMap.put(NOTIFICATION_TAG, intent.getStringExtra(NOTIFICATION_TAG));
     notificationResponseMap.put(ACTION_ID, intent.getStringExtra(ACTION_ID));
+    notificationResponseMap.put(TIMESTAMP, notificationTimestamp); // [ADD]
     notificationResponseMap.put(
         FlutterLocalNotificationsPlugin.PAYLOAD,
         intent.getStringExtra(FlutterLocalNotificationsPlugin.PAYLOAD));
