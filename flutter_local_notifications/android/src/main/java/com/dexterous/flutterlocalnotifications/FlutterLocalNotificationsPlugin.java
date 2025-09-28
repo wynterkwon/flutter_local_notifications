@@ -639,6 +639,12 @@ public class FlutterLocalNotificationsPlugin
 
   static Map<String, Object> extractNotificationResponseMap(Intent intent) {
     final int notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
+    
+    // 1. Intent에서 'deliveredAt' 값을 가져옴
+    Long deliveredAt = intent.hasExtra("deliveredAt")
+    ? intent.getLongExtra("deliveredAt", 0L)
+    : null; // 0L 대신 null을 사용하여 값이 없을 수도 있음을 명확히 함
+
     final Map<String, Object> notificationResponseMap = new HashMap<>();
     notificationResponseMap.put(NOTIFICATION_ID, notificationId);
     notificationResponseMap.put(NOTIFICATION_TAG, intent.getStringExtra(NOTIFICATION_TAG));
@@ -646,7 +652,11 @@ public class FlutterLocalNotificationsPlugin
     notificationResponseMap.put(
         FlutterLocalNotificationsPlugin.PAYLOAD,
         intent.getStringExtra(FlutterLocalNotificationsPlugin.PAYLOAD));
-
+    
+    // 2. 맵에 'deliveredAt' 추가
+    if (deliveredAt != null && deliveredAt != 0L)
+      {    notificationResponseMap.put("deliveredAt", deliveredAt); 
+      }    
     Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
     if (remoteInput != null) {
       notificationResponseMap.put(INPUT, remoteInput.getString(INPUT_RESULT));

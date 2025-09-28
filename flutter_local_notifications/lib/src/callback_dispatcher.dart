@@ -45,6 +45,9 @@ void callbackDispatcher() {
         payload: event['payload'],
         notificationResponseType:
             NotificationResponseType.selectedNotificationAction,
+        deliveredAt: event['deliveredAt'] == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(event['deliveredAt'] as int),
       ));
     });
   });

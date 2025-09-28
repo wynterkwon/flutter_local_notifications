@@ -94,6 +94,7 @@ class NotificationResponse {
     this.input,
     this.payload,
     this.data = const <String, dynamic>{},
+    this.deliveredAt,
   });
 
   /// The notification's id.
@@ -122,6 +123,12 @@ class NotificationResponse {
 
   /// The notification response type.
   final NotificationResponseType notificationResponseType;
+
+  /// The date and time the notification was delivered.
+  ///
+  /// This is nullable as support for this is only available on Android and
+  /// iOS.
+  final DateTime? deliveredAt;
 }
 
 /// Contains details on the notification that launched the application.
