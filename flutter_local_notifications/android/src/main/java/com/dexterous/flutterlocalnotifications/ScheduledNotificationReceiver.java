@@ -53,6 +53,14 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       if (!repeat) {
         FlutterLocalNotificationsPlugin.removeNotificationFromCache(context, notificationId);
       }
+
+           // 1. 알림 발행 시각 (밀리초) 획득
+      long deliveredAt = System.currentTimeMillis();
+
+      // 2. Intent에 'deliveredAt' 데이터 추가
+      // 이 데이터는 Receiver에서 Dart로 전달되기 전에 Intent를 통해 이동합니다.
+      intent.putExtra("deliveredAt", deliveredAt);
+      
     } else {
       Gson gson = FlutterLocalNotificationsPlugin.buildGson();
       Type type = new TypeToken<NotificationDetails>() {}.getType();
