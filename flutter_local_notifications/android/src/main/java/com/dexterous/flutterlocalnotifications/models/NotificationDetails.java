@@ -128,6 +128,7 @@ public class NotificationDetails implements Serializable {
   private static final String COLORIZED = "colorized";
   private static final String NUMBER = "number";
   private static final String AUDIO_ATTRIBUTES_USAGE = "audioAttributesUsage";
+  private static final String DELIVERED_AT = "deliveredAt";
 
   public Integer id;
   public String title;
@@ -175,6 +176,7 @@ public class NotificationDetails implements Serializable {
   public Integer ledOffMs;
   public String ticker;
   public Integer visibility;
+  public Long deliveredAt;
 
   @SerializedName(value = "scheduleMode", alternate = "allowWhileIdle")
   public ScheduleMode scheduleMode;
@@ -241,6 +243,10 @@ public class NotificationDetails implements Serializable {
     }
     if (arguments.containsKey(DAY)) {
       notificationDetails.day = (Integer) arguments.get(DAY);
+    }
+
+    if (arguments.containsKey(DELIVERED_AT)) {
+      notificationDetails.deliveredAt = (Long) arguments.get(DELIVERED_AT);
     }
 
     readPlatformSpecifics(arguments, notificationDetails);

@@ -219,6 +219,7 @@ public class FlutterLocalNotificationsPlugin
 
   static final int FULL_SCREEN_INTENT_PERMISSION_REQUEST_CODE = 3;
   static final int NOTIFICATION_POLICY_ACCESS_REQUEST_CODE = 4;
+  static final String DELIVERED_AT = "deliveredAt";
 
   private PermissionRequestListener callback;
 
@@ -272,6 +273,7 @@ public class FlutterLocalNotificationsPlugin
     intent.setAction(SELECT_NOTIFICATION);
     intent.putExtra(NOTIFICATION_ID, notificationDetails.id);
     intent.putExtra(PAYLOAD, notificationDetails.payload);
+    intent.putExtra(DELIVERED_AT, notificationDetails.deliveredAt);
     int flags = PendingIntent.FLAG_UPDATE_CURRENT;
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
       flags |= PendingIntent.FLAG_IMMUTABLE;
@@ -571,6 +573,11 @@ public class FlutterLocalNotificationsPlugin
     String notificationDetailsJson = gson.toJson(notificationDetails);
     Intent notificationIntent = new Intent(context, ScheduledNotificationReceiver.class);
     notificationIntent.putExtra(NOTIFICATION_DETAILS, notificationDetailsJson);
+
+    // 알림 발행일 추가 
+    long deliveredAt = System.currentTimeMillis();
+    notificationIntent.putExtra("deliveredAt", deliveredAt);
+
     PendingIntent pendingIntent =
         getBroadcastPendingIntent(context, notificationDetails.id, notificationIntent);
 
@@ -590,10 +597,16 @@ public class FlutterLocalNotificationsPlugin
       Context context,
       final NotificationDetails notificationDetails,
       Boolean updateScheduledNotificationsCache) {
+        System.out.println("zonedScheduleNotification - notificationDetails.deliveredAt: " + notificationDetails.deliveredAt);
     Gson gson = buildGson();
     String notificationDetailsJson = gson.toJson(notificationDetails);
     Intent notificationIntent = new Intent(context, ScheduledNotificationReceiver.class);
     notificationIntent.putExtra(NOTIFICATION_DETAILS, notificationDetailsJson);
+
+    // 알림 발행일 추가 
+    // long deliveredAt = System.currentTimeMillis();
+    // notificationIntent.putExtra("deliveredAt", deliveredAt);
+
     PendingIntent pendingIntent =
         getBroadcastPendingIntent(context, notificationDetails.id, notificationIntent);
     AlarmManager alarmManager = getAlarmManager(context);
@@ -620,6 +633,11 @@ public class FlutterLocalNotificationsPlugin
     String notificationDetailsJson = gson.toJson(notificationDetails);
     Intent notificationIntent = new Intent(context, ScheduledNotificationReceiver.class);
     notificationIntent.putExtra(NOTIFICATION_DETAILS, notificationDetailsJson);
+
+    // 알림 발행일 추가
+    long deliveredAt = System.currentTimeMillis();
+    notificationIntent.putExtra("deliveredAt", deliveredAt);
+    
     PendingIntent pendingIntent =
         getBroadcastPendingIntent(context, notificationDetails.id, notificationIntent);
     AlarmManager alarmManager = getAlarmManager(context);
@@ -637,13 +655,14 @@ public class FlutterLocalNotificationsPlugin
     saveScheduledNotification(context, notificationDetails);
   }
 
+
   static Map<String, Object> extractNotificationResponseMap(Intent intent) {
     final int notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
     
-    // 1. Intent에서 'deliveredAt' 값을 가져옴
-    Long deliveredAt = intent.hasExtra("deliveredAt")
-    ? intent.getLongExtra("deliveredAt", 0L)
-    : null; // 0L 대신 null을 사용하여 값이 없을 수도 있음을 명확히 함
+    // // 1. Intent에서 'deliveredAt' 값을 가져옴
+    // Long deliveredAt = intent.hasExtra("deliveredAt")
+    // ? intent.getLongExtra("deliveredAt", 0L)
+    // : null; // 0L 대신 null을 사용하여 값이 없을 수도 있음을 명확히 함
 
     final Map<String, Object> notificationResponseMap = new HashMap<>();
     notificationResponseMap.put(NOTIFICATION_ID, notificationId);
@@ -653,10 +672,10 @@ public class FlutterLocalNotificationsPlugin
         FlutterLocalNotificationsPlugin.PAYLOAD,
         intent.getStringExtra(FlutterLocalNotificationsPlugin.PAYLOAD));
     
-    // 2. 맵에 'deliveredAt' 추가
-    if (deliveredAt != null && deliveredAt != 0L)
-      {    notificationResponseMap.put("deliveredAt", deliveredAt); 
-      }    
+    // // 2. 맵에 'deliveredAt' 추가
+    // if (deliveredAt != null && deliveredAt != 0L)
+    //   {    notificationResponseMap.put("deliveredAt", deliveredAt); 
+    //   }    
     Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
     if (remoteInput != null) {
       notificationResponseMap.put(INPUT, remoteInput.getString(INPUT_RESULT));
@@ -1306,8 +1325,10 @@ public class FlutterLocalNotificationsPlugin
   static void showNotification(Context context, NotificationDetails notificationDetails) {
     Notification notification = createNotification(context, notificationDetails);
     NotificationManagerCompat notificationManagerCompat = getNotificationManager(context);
-
-    if (notificationDetails.tag != null) {
+  
+    // System.out.println("shownotification details.deliveredAt : " + notificationDetails.deliveredAt); //OK
+    
+  if (notificationDetails.tag != null) {
       notificationManagerCompat.notify(
           notificationDetails.tag, notificationDetails.id, notification);
     } else {

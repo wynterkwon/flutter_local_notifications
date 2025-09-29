@@ -26,6 +26,7 @@ public class NotificationChannelDetails implements Serializable {
   private static final String LED_COLOR_GREEN = "ledColorGreen";
   private static final String LED_COLOR_BLUE = "ledColorBlue";
   private static final String AUDIO_ATTRIBUTES_USAGE = "audioAttributesUsage";
+  private static final String DELIVERED_AT = "deliveredAt";
 
   public String id;
   public String name;
@@ -43,6 +44,7 @@ public class NotificationChannelDetails implements Serializable {
   public Boolean enableLights;
   public Integer ledColor;
   public Integer audioAttributesUsage;
+  public long deliveredAt;
 
   public static NotificationChannelDetails from(Map<String, Object> arguments) {
     NotificationChannelDetails notificationChannel = new NotificationChannelDetails();
@@ -100,6 +102,7 @@ public class NotificationChannelDetails implements Serializable {
     notificationChannel.audioAttributesUsage = notificationDetails.audioAttributesUsage;
     notificationChannel.ledColor = notificationDetails.ledColor;
     notificationChannel.enableLights = notificationDetails.enableLights;
+    notificationChannel.deliveredAt = notificationDetails.deliveredAt;
     return notificationChannel;
   }
 }
