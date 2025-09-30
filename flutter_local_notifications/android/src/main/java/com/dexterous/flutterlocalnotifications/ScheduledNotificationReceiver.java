@@ -17,6 +17,9 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /** Created by michaelbui on 24/3/18. */
 @Keep
@@ -79,6 +82,26 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
           
           // 3. Map을 다시 JSON 문자열로 변환하여 payload에 재설정
           notificationDetails.payload = new Gson().toJson(payloadMap);
+          
+
+          // System.out.println("Updated payload with deliveredAt: " + notificationDetails.payload);
+          notificationDetails.body = notificationDetails.body; // body 재설정 (필요시)
+
+          // # 발행일과 body 합치기
+          String originalBody = notificationDetails.body;
+
+          // 1. long(밀리초) 값을 Date 객체로 변환합니다.
+          Date date = new Date(deliveredAt);
+
+          // 2. 원하는 포맷 ("M월 d일")을 정의합니다. (한국어 로케일 사용)
+          SimpleDateFormat formatter = new SimpleDateFormat("M월 d일", Locale.KOREA);
+
+          // 3. Date 객체를 문자열로 포맷합니다.
+          String formattedDate = formatter.format(date); // 예: "9월 30일"
+
+          // 4. 기존 body 문자열에 포맷된 날짜 문자열을 합치고 재할당합니다.
+          // 예시: "알림 내용" + " - " + "9월 30일"
+          notificationDetails.body = "[" + formattedDate + "] " + originalBody ; // 필요시 구분자 추가  
           
       } catch (Exception e) {
           Log.e(TAG, "Failed to update payload with deliveredAt: " + e.getMessage());
