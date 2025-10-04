@@ -117,7 +117,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
           // 6. 정리된 body 앞에 현재 날짜 문자열을 새로 추가하여 재할당합니다.
           // 예시: "[9월 30일] 파크레아정 드실시간입니다"
-          notificationDetails.body = "[" + formattedDate + "] " + cleanBody; 
+          notificationDetails.body = "[" + formattedDate + "] " + cleanedBody; 
           
       } catch (Exception e) {
           Log.e(TAG, "Failed to update payload with deliveredAt: " + e.getMessage());
