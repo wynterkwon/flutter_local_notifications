@@ -99,9 +99,25 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
           // 3. Date 객체를 문자열로 포맷합니다.
           String formattedDate = formatter.format(date); // 예: "9월 30일"
 
+          // [deprecated] 알림 발행일이 누적되어 바디로 전달됨
           // 4. 기존 body 문자열에 포맷된 날짜 문자열을 합치고 재할당합니다.
           // 예시: "알림 내용" + " - " + "9월 30일"
-          notificationDetails.body = "[" + formattedDate + "] " + originalBody ; // 필요시 구분자 추가  
+          // notificationDetails.body = "[" + formattedDate + "] " + originalBody ; // 필요시 구분자 추가  
+
+          // 4. 기존 body에서 누적된 모든 "[M월 d일] " 패턴을 제거합니다.
+          //    정규 표현식: \[\d{1,2}월\s\d{1,2}일\]\s?
+          //    - \[: 실제 '[' 문자
+          //    - \d{1,2}: 1~2자리 숫자 (월, 일)
+          //    - \s: 공백 문자 (Locale.KOREA 포맷 시 월과 일 사이에 공백이 들어갈 수 있음)
+          //    - \s?: 뒤따르는 공백 (날짜 뒤의 공백)
+          String cleanedBody = originalBody.replaceAll("\\[\\d{1,2}월\\s\\d{1,2}일\\]\\s?", "");
+
+          // 5. 정리된 body의 앞뒤 공백을 제거합니다.
+          cleanedBody = cleanedBody.trim();
+
+          // 6. 정리된 body 앞에 현재 날짜 문자열을 새로 추가하여 재할당합니다.
+          // 예시: "[9월 30일] 파크레아정 드실시간입니다"
+          notificationDetails.body = "[" + formattedDate + "] " + cleanBody; 
           
       } catch (Exception e) {
           Log.e(TAG, "Failed to update payload with deliveredAt: " + e.getMessage());
