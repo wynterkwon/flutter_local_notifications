@@ -102,7 +102,12 @@ public class NotificationChannelDetails implements Serializable {
     notificationChannel.audioAttributesUsage = notificationDetails.audioAttributesUsage;
     notificationChannel.ledColor = notificationDetails.ledColor;
     notificationChannel.enableLights = notificationDetails.enableLights;
-    notificationChannel.deliveredAt = notificationDetails.deliveredAt;
+    // notificationChannel.deliveredAt = notificationDetails.deliveredAt;
+    if (notificationDetails.deliveredAt != null) {
+        notificationChannel.deliveredAt = notificationDetails.deliveredAt;
+    } else {
+        notificationChannel.deliveredAt = System.currentTimeMillis(); // or 0L
+    }
     return notificationChannel;
   }
 }
